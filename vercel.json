@@ -1,9 +1,4 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "performance.html",
-      "use": "@vercel/static"
-    }
-  ]
+  "builds": [{ "src": "./performance.html", "use": "@vercel/static" }]
 }
