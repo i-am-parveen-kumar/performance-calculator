@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Developer Performance Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        box-sizing: border-box;
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      label {
+        display: block;
+        margin: 10px 0 5px;
+      }
+      input,
+      select {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .result {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1.2em;
+        color: #28a745;
+      }
+      .allocated-hours {
+        margin-top: -10px;
+        margin-bottom: 10px;
+        color: #888;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Performance Calculator</h2>
+      <label for="tickets">Number of Tickets</label>
+      <input
+        type="number"
+        id="tickets"
+        placeholder="Enter tickets completed"
+        oninput="updateAllocatedHours()"
+      />
+
+      <label for="tshirt-size">Average T-Shirt Size (1-10)</label>
+      <select id="tshirt-size" onchange="updateAllocatedHours()">
+        <option value="1">1 (2 Hours)</option>
+        <option value="2">2 (4 Hours)</option>
+        <option value="3">3 (8 Hours)</option>
+        <option value="4">4 (16 Hours)</option>
+        <option value="5">5 (32 Hours)</option>
+        <option value="6">6 (64 Hours)</option>
+        <option value="7">7 (128 Hours)</option>
+        <option value="8">8 (256 Hours)</option>
+        <option value="9">9 (512 Hours)</option>
+        <option value="10">10 (1024 Hours)</option>
+      </select>
+
+      <label for="time-taken">Time Taken (in Hours)</label>
+      <div class="allocated-hours" id="allocated-hours">Allocated Hours: 0</div>
+      <input type="number" id="time-taken" placeholder="Enter hours taken" />
+
+      <label for="bugs">Number of Bugs</label>
+      <input type="number" id="bugs" placeholder="Enter bugs found" />
+
+      <button onclick="calculatePerformance()">Calculate Performance</button>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      const tshirtData = [
+        { expectedTime: 2, bugWeight: 100 },
+        { expectedTime: 4, bugWeight: 100 },
+        { expectedTime: 8, bugWeight: 80 },
+        { expectedTime: 16, bugWeight: 70 },
+        { expectedTime: 32, bugWeight: 60 },
+        { expectedTime: 64, bugWeight: 50 },
+        { expectedTime: 128, bugWeight: 40 },
+        { expectedTime: 256, bugWeight: 30 },
+        { expectedTime: 512, bugWeight: 20 },
+        { expectedTime: 1024, bugWeight: 10 },
+      ];
+
+      function updateAllocatedHours() {
+        const tickets = parseInt(document.getElementById("tickets").value) || 0;
+        const tshirtSize = parseInt(
+          document.getElementById("tshirt-size").value
+        );
+
+        if (tickets > 0 && tshirtSize > 0) {
+          const expectedTime =
+            tshirtData[tshirtSize - 1].expectedTime * tickets;
+          document.getElementById(
+            "allocated-hours"
+          ).textContent = `Allocated Hours: ${expectedTime}`;
+        } else {
+          document.getElementById("allocated-hours").textContent =
+            "Allocated Hours: 0";
+        }
+      }
+
+      function calculatePerformance() {
+        const tickets = parseInt(document.getElementById("tickets").value) || 0;
+        const tshirtSize = parseInt(
+          document.getElementById("tshirt-size").value
+        );
+        const timeTaken =
+          parseInt(document.getElementById("time-taken").value) || 0;
+        const bugs = parseInt(document.getElementById("bugs").value) || 0;
+
+        if (tickets === 0 || tshirtSize === 0) {
+          document.getElementById("result").textContent =
+            "Please enter valid tickets and T-shirt size.";
+          return;
+        }
+
+        const expectedTime = tshirtData[tshirtSize - 1].expectedTime * tickets;
+
+        let performanceScore = 100;
+
+        if (timeTaken > expectedTime) {
+          const excessTime = timeTaken - expectedTime;
+          performanceScore -= (excessTime / expectedTime) * 100;
+        }
+
+        const bugDeduction = tshirtData[tshirtSize - 1].bugWeight;
+        performanceScore -= (bugs / tickets) * bugDeduction;
+
+        performanceScore = Math.max(0, performanceScore);
+
+        document.getElementById(
+          "result"
+        ).textContent = `Performance Score: ${performanceScore.toFixed(2)}%`;
+      }
+    </script>
+  </body>
+</html>
